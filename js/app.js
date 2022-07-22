@@ -30,15 +30,18 @@ window.onload = () => {
 }
 
 // Funciones principales
-function consultarCryptos() {
+async function consultarCryptos() {
     // Consultar las 10 cryptos con mayor MarketCap
     const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD';
 
-    fetch(url)
-        .then(respuesta => respuesta.json())
-        .then(resultado => obtenerCryptos(resultado.Data))
-        .then(cryptos => llenarSelectCryptos(cryptos))
-        .catch(error => console.error(error));
+    try {
+        const respuesta = await fetch(url);
+        const resultado = await respuesta.json();
+        const cryptos = await obtenerCryptos(resultado.Data);
+        llenarSelectCryptos(cryptos);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function llenarSelectCryptos(cryptos) {
@@ -72,17 +75,20 @@ function submitFormulario(e) {
     consultarAPI();
 }
 
-function consultarAPI() {
+async function consultarAPI() {
     const { moneda, criptomoneda } = objBusqueda;
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`;
 
     // Mostrar Spinner
     spinner();
 
-    fetch(url)
-        .then(respuesta => respuesta.json())
-        .then(cotizacion => mostrarCotizacion(cotizacion.DISPLAY[criptomoneda][moneda]))
-        .catch(error => console.error('NO SE JAJA'));
+    try {
+        const respuesta = await fetch(url);
+        const cotizacion = await respuesta.json();
+        mostrarCotizacion(cotizacion.DISPLAY[criptomoneda][moneda]);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 // Funciones de la UI
